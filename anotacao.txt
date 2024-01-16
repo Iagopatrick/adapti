@@ -1,0 +1,26 @@
+php seção 8:
+é possivel incluir tabelas pelo proprio framework laravel, usando uma migration que contem apenas regras de inclusão de novas tabelas
+default -> Valor padrão para caso o valor nao seja passado na criação da tabela
+nullable -> Valor que pode ser vazio
+O esquema de chave estrangeira foi feito de forma diferente que foi ensinado no ps
+
+After -> criação de uma coluna após uma coluna já criada 
+Comandos das migrate:
+Status -> Mostra as migrates e demonstra se já foram executadas ou nao
+Reset -> Reverte as alterações do banco, executa o método down
+Refresh -> Reverte as migrações e depois executa novamente o comando de criação
+Fresh -> Ele dropa os elementos e recria as migration
+
+Eloquent ORM - Object Relation Map
+Método para mapear dados entre o banco de dados e a aplicação
+
+Tinker -> Console interativo que da acesso as classes do projeto pelo terminal 
+
+O teste do eloquent usando a tecnologia do tinker é mais eficiete.
+Os atributos são criandos em tempo real, enquanto se testa a classe, respeitando as colunas da tabela respectiva.
+Quando há alterações no código fonte é preciso reiniciar o tinker para ele atualizar e manter as mudanças feitas.
+
+Com o uso do all() é possivel recuperar todas instancias de determinada tabela
+É possível fazer um foreach para percorrer o array dos atributos de cada objeto na tabela
+Com o uso do find(primer_key) é possivel achar o objeto que foi requerido
+where(), whereIn(), whereNotIn(), com base na igualdade, whereBetween(), whereNotBetween(), com base em um intervalo.
