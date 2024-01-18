@@ -1,0 +1,28 @@
+Symbol() propriedades unicas, quase uma const como uma propriedade de objetos
+get() e set()
+instanceOf() -> verifica quem é o pai do obejto
+
+Programação Assincrona
+Acontece de uma forma não sincronizada, as ações podem acontecer sem uma fila ou ordem pré determinada
+ajax - Asynchronous JavaScript and XML -> Manda dados para o BD sem o reload da página
+Callback -> uma função que faz uma ação depois de algum acontecimento no código.
+Promises -> Guarda um valor que pode ser usado no futuro e é possível conseguir pegar os erros através do catch
+reject rejeita as promessas / all consegue captar todas promessas e resolver todas.
+async function -> retornam uma promise
+await -> espera determinada ação acontecerem ou espera promessas resolverem
+generators -> ações podem ser pausadas e voltarem 
+
+Eventos - clicks, movimento do mouse ou apertar teclas do teclado
+é possivel adicionar e remover eventos de tags do html
+Os objetos do evento são criados pelo prórpio JavaScript ao utilizar-mos de argumentos opcionais
+Um dos problemas do evento é a propagation, que basicamente é a propagação de eventos que, de alguma forma, estão conectados. para resolver isso,
+temos o stopPropagation.
+Eventos Default podem ser mudadas -> exemplo de evento default é o clicar em um link e ele te guiar para outra aba.
+Keydown evento quando apertamos a tecla, keyup evento quando soltamos a tecla.
+De forma semelhante, o mousedown é quando apertamos o mouse, mouseup é quando soltamos o mouse e existe o dblclick (dois cliques).
+Também é possivel pegar o movimento do mouse, mousemove.
+Eventos por scroll são possiveis, por exemplo definir um ponto da tela especifico para ocorre algum evento.
+Temos os eventos de foco, o focus é ao clicar no elemento e blur quando ele para de focar no elemento.
+Evento do carregamento da página, útil para nao perder dados ao recarregar a página.
+Debounce -> evento que dispara muitas vezes e o debounce é uma forma de suavizar os eventos
+
