@@ -24,3 +24,17 @@ Com o uso do all() é possivel recuperar todas instancias de determinada tabela
 É possível fazer um foreach para percorrer o array dos atributos de cada objeto na tabela
 Com o uso do find(primer_key) é possivel achar o objeto que foi requerido
 where(), whereIn(), whereNotIn(), com base na igualdade, whereBetween(), whereNotBetween(), com base em um intervalo.
+É possível colocar mais parametros para pesquisar com o where. orwhere() pode ser usado como uma forma de usar o 'or'.
+<> -> diferente
+whereNull() e whereNotNull().
+Collections -> coleção de dados, possibilidade de conseguir lidar com o retorno da consulta com o eloquent
+first, last, reverse -> first retorna o primeiro elemento do 'array', last o ultimo e o reverse reverte a ordem do 'array'
+toArray() e toJson().
+pluck('chave') -> recupera todos os valores de uma determinada chave.
+                                Atualizando regristros
+depois de alterarmos dados de algum objeto podemos salvar as atlterações no banco através do save().
+com o fill(['nome' => 'novo nome',...]) podemos alterar os dados com um array associativo.
+Podemos combinar o where() com o update() para mudar registros com atributos localizados pelo filtro.
+delete() -> podemos combinar da mesma forma que o save ou update.
+softDelete -> É preciso mudar a migration da classe que tera o softDelete para ter o campo do mesmo na sua tabela. Ela controla as
+remoções feitas. É possivel recuperar aqueles dados que foram deletados pelo softDelete através do onlyTrashed()
