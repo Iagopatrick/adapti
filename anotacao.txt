@@ -1,3 +1,19 @@
+Rever a explicacao das rotas
+
+nao se esquecer que e preciso ter o accept no header do cliente para identificar que ele consegue tratar o retorno do tipo json
+
+dentro do metodo update e preciso configurar para ser possivel utilizar o endpoint patch => Para isso e preciso percorrer as regras existentes e verificar quais foram selecionadas para serem mudadas
+
+UPLOAD DE ARQUIVOS
+Os arquivos nao vem no array de atribtos, mas sim num array de imagem
+
+Para a persitencia de arquivos (salvar) basta recuperar o arquivo $image = $request->file('imagem')
+$image->store('imagens', 'public') //imagens aqui e` o diretorio aonde sera salvo o arquivo. Para verificar esses diretorios ha os diretorios em filesystens na pasta config.
+
+
+
+
+
 php seção 8:
 é possivel incluir tabelas pelo proprio framework laravel, usando uma migration que contem apenas regras de inclusão de novas tabelas
 default -> Valor padrão para caso o valor nao seja passado na criação da tabela

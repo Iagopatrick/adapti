@@ -1,0 +1,89 @@
+É preciso expotar as funções e deixá-las por padrão para o framework ter acesso a ela e mostrar a página, mostrando tudo que for
+colocado como retorno dessa função.
+ex:
+export default function primeiro(){
+    return "Primeiro"
+}
+
+Ao criar um arquivo do tipo js, o framework já cria uma página web com essa url associada, dentro da pasta pages.
+
+Uma forma de criar o html dentro desse retorno da função:
+export default function jsx1Diferente() {
+    return (
+        <div>
+            <h1>JSX #01</h1>
+        </div>
+    )
+}
+
+Com o react fragment é possível juntar duas tags adjacentes. É preciso importar a biblioteca do react para poder utilizar o 
+fragment. Também é possível usar uma tag vazia. ex:
+<> 
+    <h1>Titulo</h1>
+    <h2>Subtitulo</h2>
+</>
+Nesse caso haveria erro por ter duas tags adjacentes, já que elas não estão agrupadas em uma tag ou em uma lista. Para evitar o erro
+há a possibilidade de ter essa tag vazia como forma de juntar tags adjacentes.
+
+O React possibilita uma forma de trabalhar melhor usando componentes, o que deixa uma forma mais dinamica de estilizar e trabalhar o site.
+Uma boa prática é sempre deixar a função default com o nome maiúsculo para demonstrar que aquela funçao refere-se à um componente.
+
+Para conseguir usar o css é preciso colocar ele na pasta global de estilos e importar por lá, para que não altere todos os arquivos
+do projeto. Além disso, é preciso buscar ele como uma forma mais precisa, usando o nome quando for referenciar no css.
+Para driblar essa complicação, temos a opção de usar o .module.css que pode ser importado como um componente, geralmente usando o nome
+style. Para acessar os estilos dentro desse css, basta usar uma forma de orientação a objeto, que acessa as informações pelas propriedades.
+
+@Um conceito muito importante é que as propriedades são de apenas leitura, para que seja possível deixar elas como uma forma manipulável é 
+preciso usar de outra forma.
+
+Dentro do js não é possivel fazer variaveis com o uso de hífen, por isso o react permite usar variaveis com o camelCase.
+Quando temos {{}} as chaves internas referem-se a um objeto. ex:
+
+export default function Estilo(props) {
+
+    return (
+        <div>
+            <h1 style={{
+                backgroundColor: props.numero >= 0 ? "#2D2" : "#D22",
+                color: props.color,
+                textAlign: props.direita ? "right" : "left",
+            }}>
+                Texto #01
+            </h1>
+            <h2 className={props.numero >= 0 ? "azul" : "vermelho"}>
+                Texto #02
+            </h2>
+        </div>
+    )
+}
+
+Fazer o exercicio do tabuleiro
+
+Dentro de uma lista de repetição é importante que cada tag tenha sua key única, uma forma simples de fzer isso dentro de um laço é 
+atribuir a cada loop uma key para cada tag conforme o numero do iterator.
+
+Para utilizar um model usa-se da maneira padrão, a unica diferença é que para colocar atributos usa-se # antes de cada um. Ex:
+
+export default class Produto {
+    #id
+    #nome
+    #preco
+
+    constructor(id, nome, preco) {
+        this.#id = id
+        this.#nome = nome
+        this.#preco = preco
+    }
+
+    get id() {
+        return this.#id
+    }
+    
+    get nome() {
+        return this.#nome
+    }
+    
+    get preco() {
+        return this.#preco
+    }
+}
