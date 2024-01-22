@@ -62,6 +62,9 @@ Fazer o exercicio do tabuleiro
 Dentro de uma lista de repetição é importante que cada tag tenha sua key única, uma forma simples de fzer isso dentro de um laço é 
 atribuir a cada loop uma key para cada tag conforme o numero do iterator.
 
+De uma forma melhor, é possível utilzar o map com uma arrow function para poder fazer a forma que queremos, usando a tag e colocando 
+o conteúdo desejado na forma.
+
 Para utilizar um model usa-se da maneira padrão, a unica diferença é que para colocar atributos usa-se # antes de cada um. Ex:
 
 export default class Produto {
@@ -87,3 +90,64 @@ export default class Produto {
         return this.#preco
     }
 }
+
+Para melhorar visualização é bom utilizar funções e componentes.
+
+Props Children
+Com essa opção podemos acessar as propriedades dos filhos, por exemplo:
+export default function Lista(props) {
+    return (
+        <div>
+            <h1>Lista de Algo</h1>
+            <ul style={{
+                listStyle: "none",
+                padding: 0
+            }}>
+                {props.children}
+            </ul>
+        </div>
+    )
+}
+
+import Item from "../../components/Item";
+import Lista from "../../components/Lista";
+
+export default function componenteComFilho() {
+    return (
+        <div>
+            <Lista>
+                <Item conteudo="Item #1" />
+                <Item conteudo="Item #2" />
+                <Item conteudo="Item #3" />
+                <Item conteudo="Item #11" />
+                <Item conteudo="Item #12" />
+                <Item conteudo="Item #13" />
+            </Lista>
+        </div>
+    )
+}
+
+Na função Lista, usamos props.children para acessar os filhos do componente Lista, que é possível visualizar na função componenteComFilho.
+
+Temos uma árvore de componentes dentro da aplicação. Uma forma de ter a comunicação entre eles temos a comunicação direta e indireta.
+A direta é mais básica e usamos ao passarmos dados diretamente via props.
+ao usarmos algo como {...props} estamos passando todas as propriedades vinda de props para esse componente. ex:
+<Filho nome = "Iago" {...props}/>
+
+Contudo, caso já venha no props um valor para nome, o nome "Iago" será sobrescrito. Para driblar isso, devemos colocar o props primeiro e
+tudo que vier depois irá ser trocado pelo valor que colocamos, ex:
+<Filho {...props} nome = "Iago"/>
+
+Já a comunicação indireta ocorre quando passamos informações do filho para o pai de forma indireta usando uma função que foi passada
+pelo pai.
+Importante destacar que é possível usar a função e passar diferentes parametros usando uma arrow function nao deifinida {() => f(param1, param2,..., paramN)}
+
+
+Podemos chamar eventos dentro de funções ou fora. Além disso, podemos fazer um evento como propriedade de uma tag usando a forma de acessar
+o js dentro de tags, ou seja, com uso de chaves. <button onClick = {() => console.log("ação")}> clique </button>
+
+Para utilizar o valor de eventos, por exemplo colocar as coordenadas do mouse na tela, é preciso usar a função useState do react
+
+Variaveis que usam o const tem a possibilidade do contruscting
+
+Componente controlado -> Muito usado em formuláros
