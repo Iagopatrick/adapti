@@ -54,3 +54,98 @@ Podemos combinar o where() com o update() para mudar registros com atributos loc
 delete() -> podemos combinar da mesma forma que o save ou update.
 softDelete -> É preciso mudar a migration da classe que tera o softDelete para ter o campo do mesmo na sua tabela. Ela controla as
 remoções feitas. É possivel recuperar aqueles dados que foram deletados pelo softDelete através do onlyTrashed()
+
+
+Seção 10 - Middlewares
+Com eles é possivel tomar ações no intermediario entre o acesso/resposta do cliente e a aplicação, possibilitando login, bloqueio
+proteção e algumas outras ações, que manipulam a aplicação com base na origem.
+
+php artisan make:middleware nomeDoMiddleware
+
+Para utilizarmos os Middlewares passamos eles nas rotas, por exemplo:
+
+Route::middleware(LogAcessoMiddleware::class)
+    ->get('/', 'PrincipalController@principal')
+    ->name('site.index');
+    //Vale ressaltar que é possível colocar a parte do middleware no final também.
+
+Dessa forma, antes de retornar algo, o middleware analisa a aplicação em si e pode decidir qual ação tomar, parar o acesso ou permitir.
+Como forma de controlar os acessos, criamos um modelo de log, que irá persistir o ip que tentou acessar determinada rota.
+Para acerssamos o ip e a rota utilizamos:
+$ip = $request->server>get('REMOTE_ADDR');
+$rota = $request->getRequestUri(); //RequestUri é o nome da variavel recebida pelo request, é possível visualizá-la pelo dd
+basicamente, dentro da classe do middleware:
+public function handle($request, Closure $next)
+    {
+
+        $ip = $request->server->get('REMOTE_ADDR');
+        $rota = $request->getRequestUri();
+        LogAcesso::create(['log' => "IP $ip requisitou a rota $rota"]);
+
+        return $next($request);
+
+    }
+
+Também podemos usar os Middlewares nos controllers, mantendo a arquitetura e a lógica de aplicação, mudando apenas o local.
+Para isso, utilizamos uma lógica de colocar o middleware() no construtor dentro do controller.
+
+class NomeDoController extends Controller{
+    public function __contruct(){
+        $hits->middleware(NomeDoMiddleware::class);
+    }
+    .
+    .
+    .
+}
+
+Middlewares também podem estar em rotas para api. Para isso utilizamos a classe Kernel.php e colocamos os Middlewares dentro do
+middlewareGroups, onde há separação entre 'web' e 'api'. Além disso, com essa classe podemos colocar middleware para todas as rotas web
+e não somente em uma rota específica. 
+Podemos usar apelidos para middlewares, dentro da classe Kernel.php podemos colocar o apelido que queremos dentro do $routeMiddleware.
+Dessa forma, podemos usar esse apelido dentro das routes, por exemplo:
+Route::middleware('log.acesso') //log.acesso foi colocado como apelido dentro da classe kernel.
+    ->get('/', 'PrincipalController@principal')
+    ->name('site.index');
+
+Também podemos fazer o mesmo dentro do construct do middleware em um controller, por exemplo:
+class NomeDoController extends Controller{
+    public function __contruct(){
+        $hits->middleware('log.acesso');
+    }
+    .
+    .
+    .
+}
+
+Da mesma forma que podemos fazer middleware para as requisições, podemos fazer para respostas, fazendo o encadeamento de middlewares.
+Para isso, usando um apelido, podemos colocar os middleware que queremos separados por vírgulas dentro do middleware nas routes, por exemplo:
+Route::middleware('log.acesso', 'autenticacao') 
+    ->get('/', 'PrincipalController@principal')
+    ->name('site.index');
+Além disso, é preciso que dentro do middleware do log.acesso tenha o return com o $next para poder passar a requisição para o próximo middleware.
+A ordem em que os middleware aparecem importa, eles são acessados de forma sequencial.
+
+Uma forma útil de usar o middleware é utilizar somente para um grupo de rotas e, para isso, baste colocar o middleware na primeira route que contem o prefix, por exemplo:
+Route::middleware('autenticacao')->prefix('/app')->group(function() {
+    Route::get('/clientes', function(){return 'Clientes';})->name('app.clientes');
+    Route::get('/fornecedores', 'FornecedorController@index')->name('app.fornecedores');
+    Route::get('/produtos', function(){return 'produtos';})->name('app.produtos');
+});
+
+Podemos passar parametros para os middleware, basta colocamos após a chamada do middleware os parametros, usando :, por exemplo:
+Route::middleware('autenticacao:param1, param2')->prefix('/app')->group(function() {
+    Route::get('/clientes', function(){return 'Clientes';})->name('app.clientes');
+    Route::get('/fornecedores', 'FornecedorController@index')->name('app.fornecedores');
+    Route::get('/produtos', function(){return 'produtos';})->name('app.produtos');
+});
+
+Podemos recuperar a resposta do request colocando o  $next($request) dentro de uma variável antes de colocar ele direto no return, por exemplo:
+
+$resposta = $next($request) //dessa forma podemos definir o statusCode ou manipular alguma outra variável dentro da resposta
+$resposta->setStatusCode(201, 'O status da resposta e o texto da resposta foram modificados') //mudei o statuscode e a resposta que vai junto com o statuscode
+return $resposta //após a modificação, retornarmos a resposta com as alterações devidas.
+
+Reforçando, só podemos avançar pelos middlewares usando o next, até chegarmos a aplicação. Isso também se aplica quando for uma resposta da aplicação para o cliente.
+
+
+@print_r  não funciona para response, use dd

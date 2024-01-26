@@ -9,9 +9,9 @@ let ex1 = [1, 2, 3, 4, 5];
 console.log(ex1[1] + " " + ex1[3]+ " " + ex1[4]);
 
 let onibus = {
-    rodas = 8,
-    limite_passageiros = 40,
-    portas = 2
+    rodas : 8,
+    limite_passageiros : 40,
+    portas : 2
 
 };
 

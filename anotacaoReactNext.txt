@@ -151,3 +151,121 @@ Para utilizar o valor de eventos, por exemplo colocar as coordenadas do mouse na
 Variaveis que usam o const tem a possibilidade do contruscting
 
 Componente controlado -> Muito usado em formuláros
+Para o input mudar, no caso ser possível escrever no input, é preciso mudar o estado. Para isso, usamos o OnChange
+
+import { useState } from "react"
+
+export default function formulario() {
+    const [valor, setValor] = useState("")
+
+    function alterarInput() {
+        setValor(valor + "!")
+    }
+
+    return (
+        <div style={{
+            display: "flex",
+            flexDirection: "column"
+        }}>
+            <span>{valor}</span>
+            <input type="text" value={valor}
+                onChange={e => setValor(e.target.value)} />
+            <button onClick={alterarInput}>Alterar</button>
+        </div>
+    )
+}
+
+
+Dentro de Classes que são componentes (extends Component) temos o método render(). Como estamos usando classes só será possivel
+usar as propriedades de classes usando o 'this.props.nomeDaPropriedade'. Além disso, só podemos mudar estados usando o setState.
+
+import { Component } from "react";
+
+export default class Contador extends Component {
+    state = {
+        numero: this.props.valorInicial ?? 0,
+        passo: this.props.passo ?? 1
+    }
+
+    inc = () => {
+        this.setState({
+            numero: this.state.numero + this.state.passo
+        })
+    }
+
+    dec = () => {
+        this.setState({
+            numero: this.state.numero - this.state.passo
+        })
+    }
+
+    alterarPasso = (ev) => {
+        this.setState({ passo: +ev.target.value })
+    }
+
+    renderForm() {
+        return (
+            <>
+                <input type="number" min={1} max={1000}
+                    value={this.state.passo}
+                    onChange={this.alterarPasso} />
+                <button onClick={this.dec}>-</button> //só é possivel usar esse this.dec por ser uma arrow function
+                <button onClick={this.inc}>+</button>
+            </>
+        )
+    }
+
+    render() {
+        return (
+            <div>
+                <h1>Contador (usando Classe)</h1>
+                <h2>{this.state.numero}</h2>
+                {this.renderForm()}
+            </div>
+        )
+    }
+}
+
+
+
+import { Component } from "react";
+import Contador from "../../components/Contador"
+
+export default class ContadorPage extends Component {
+
+    render() {
+        return (
+            <>
+                <Contador valorInicial={100} passo={37} />
+            </>
+        )
+    }
+}
+
+Sobre os Hooks
+useState() -> retorna primeiro o valor do estado e uma função para mudar esse valor
+const [number. setNumber] = useState(0)
+Os hooks não podem ser executados mais de uma vez numa mesma execução, ou seja, não pode estar dentro de condicionais e fora ao mesmo tempo
+
+useEffect() -> hook com função de fazer um fetch para uma api.
+useEffect(() =>{
+
+}, [ResourceType]) //Só faz o fetch quando o ResourceType é atualizado
+
+useRef() -> hook com função persistir um valor durante o ciclo de componente sem a necessidade de renderizar novamente em caso de mudança.
+Muito usado para referenciar elementos html (Apertar em um botão e focar em algum input por exemplo).
+const inputRef useRef();
+
+const focusImput = () => {
+    inputRef.current.focus()
+}
+...
+<input
+    ref = {inputRef}
+    value={name}
+    OnChange{e => setName(e.target.value)}
+    />
+<button onClick={focusImput}> Focus </button>
+...
+
+Também podemos utilizá-lo para guardar o valor anterior ao useState.
