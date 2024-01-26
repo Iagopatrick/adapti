@@ -147,5 +147,93 @@ return $resposta //após a modificação, retornarmos a resposta com as alteraç
 
 Reforçando, só podemos avançar pelos middlewares usando o next, até chegarmos a aplicação. Isso também se aplica quando for uma resposta da aplicação para o cliente.
 
+Seção 18 - autenticacão API - Autorização JWT (Json Web Token)
+Para validar o acesso de um cliente o sistema retorna um token de autorização a requisição do usuário. Autorização != Autenticação, essa afirmação é verdadeira pois A
+autorização confirma que o usuário pode acessar as requisições sem persistir dados do cliente.
+A esturutra do token JWT é composta por Header, Payload e Signature.
 
-@print_r  não funciona para response, use dd
+Para instalar o pacote de JWT-Auth é preciso ir até o diretorio do projeto e colocar o seguinte comando no terminal:
+composer require tymon/jwt-auth "1.0.2" (versão Específica da aula)
+
+Configuração do jwt-auth: https://jwt-auth.readthedocs.io/en/develop/
+
+Após as configurações necessárias precisamos implementar a interface dentro do User. Para melhor visualização é possível ir na seção quick start do link acima.
+O arquivo de exemplo está presente na pasta. Além dessas alterações é preciso configurar o auth guarda, mudando o auth, detalhes no site.
+Além desses passos é preciso configurar as rotas de autenticação. Sendo elas com o metodo post com o nome login, logout, refresh e me. Exemplo:
+    Route::post('login', 'App\Http\Controllers\AuthController@login');
+    Route::post('logout', 'App\Http\Controllers\AuthController@logout');
+    Route::post('refresh', 'App\Http\Controllers\AuthController@refresh');
+    Route::post('me', 'App\Http\Controllers\AuthController@me');
+Após isso, devemos criar o controller Auth, AuthController e colocar as funções das rotas presentes.
+Usando o tinker podemos persirtir um usuário no banco de dados. Ao colocar o password é preciso passar a senha encriptada, usando a função bcrypt('senha')
+exemplo:
+    $user = new App\Models\User()
+    $user->name = 'Name'
+    $user->email = 'email'
+    $user->password = bcrypt('senha')
+    $user->save();
+
+Próxmo passo é implementar o método de login. Ele deve autenticar o usuário e retornar o JWT. Para isso, recebemos as credenciais em uma variável e 
+fazemos a autorização dentro de uma variavel, exemplo:
+    public function login(Request $request) {
+        
+        $credenciais = $request->all(['email', 'password']); //[]
+
+        //autenticação (email e senha)
+        $token = auth('api')->attempt($credenciais);
+        
+        if($token) { //usuário autenticado com sucesso
+            return response()->json(['token' => $token]);
+
+        } else { //erro de usuário ou senha
+            return response()->json(['erro' => 'Usuário ou senha inválido!'], 403);
+
+            //401 = Unauthorized -> não autorizado
+            //403 = forbidden -> proibido (login inválido)
+        }
+
+        //retornar um Json Web Token
+        //return 'login';
+    }
+Após isso podemos configurar as rotas para serem protegidas e serem acessadas mediante a autenticação. O primeiro passo é colocar nas routesMiddleware o apelido para o JWT e validando a rota, então:
+    'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
+Depois, devemos colocar as rotas desejadas dentro de um pacote de autenticação.
+Route::prefix('v1')->middleware('jwt.auth')->group(function() {
+    Route::post('me', 'App\Http\Controllers\AuthController@me');
+    Route::post('logout', 'App\Http\Controllers\AuthController@logout');
+    Route::post('refresh', 'App\Http\Controllers\AuthController@refresh');
+    Route::apiResource('cliente', 'App\Http\Controllers\ClienteController');
+    Route::apiResource('carro', 'App\Http\Controllers\CarroController');
+    Route::apiResource('locacao', 'App\Http\Controllers\LocacaoController');
+    Route::apiResource('marca', 'App\Http\Controllers\MarcaController');
+    Route::apiResource('modelo', 'App\Http\Controllers\ModeloController');
+});
+O prefixo em questão é para colocar esse prefixo antes do acesso dessas rotas, então deveria ser acessado usando 'localhost:8000/v1/me' e por ai vai.
+Agora é preciso fixar essa autenticação ao cliente para ele poder acessar as áreas que ele tem acesso. Para isso, o cliente precisa persistir o token de retorno após a autenticação do usuário via login.
+Uma forma de conseguir acessar pelo postman é passar o token recebido pelo processo de autenticação e colocá-lo no header com a key Authorization e no value colocar Bearer 'token' dessa forma, bearer, depois um espaço e depois o token.
+Dessa forma a api irá liberar as rotas que são protegidas pela autenticação. Podemos configurar esse token, como um tempo de validade.
+Através do método me do controller é possível recuperar os dados do usuário, para isso funcionar é preciso que ele fique dentro das rotas protegidas.
+    public function me() {
+        return response()->json(auth()->user());
+    }
+Podemos também atualizar a autorização, ou seja, renovar a autorização. Para isso usamos o método refresh. Recebemos o token verificando a atuorização e dando um refresh. Após isso, basta retorná-lo.
+    public function refresh() {
+        $token = auth('api')->refresh(); //cliente encaminhe um jwt válido
+        return response()->json(['token' => $token]);
+    }
+É importante destacar que esse refresh muda o token, por isso a atualização.
+Após isso, podemos agora usar o método logout, para finalizar a autenticação do usuário. Para isso, é importante que a rota de logout esteja protegida também. Para isso, usando o método logout() do auth, dessa maneira:
+    public function logout() {
+        auth('api')->logout();
+        return response()->json(['msg' => 'Logout foi realizado com sucesso!']);
+    }
+Sobre a anatomia do JWT: O token por si é dividido em três partes, sendo elas separadas por '.'. Como foi dito anteriormente, essas partes são o header, Payload e o Signature. No payload podemos colocar informações do usuário, como nível de acesso, email, etc. 
+A parte do Signature é dividida em três partes também, o header, payload e uma assinatura criptografada e exclusiva da api.
+Agora para colocar um prazo no JWT podemos mudar dentro do Payload  o exp. A propriedade iat refere-se a criação e a exp a expiração desse token. Para isso, vamos a pasta jwt.php, na pasta config e mudar o ttl. Ou colocarmos uma variável JTW_TTL no .env e alterar o tempo.
+    'ttl' => env('JWT_TTL', 60), //em minutos
+    JWT_TTL=120 //dessa forma ele fica 2 horas
+
+
+Dicas úteis:
+print_r  não funciona para response, use dd.
+no site jwt.io é possível debbugar o token do jwt.
