@@ -1,0 +1,2 @@
+  box-sizing: border-box; -> isso faz com que o tamanho da caixa contem a borda inclusa, ou seja, caso ele tenha a prorpiedade heigth: 200px e border: 20px solid red, o conteudo todo tem que resultar em 200, caso seja
+  content-box ele tera 220 de conteudo total.

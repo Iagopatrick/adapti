@@ -269,3 +269,150 @@ const focusImput = () => {
 ...
 
 Também podemos utilizá-lo para guardar o valor anterior ao useState.
+
+useReducer() -> Gerencia o estado da aplicação ou guarda tarefas dentro do state. Bem parecido com o useState, mas é bem útil para tarefas mais complexas
+
+const reducer = (state, action) => {
+    switch(action.type){
+        case "increment":
+            return {
+                counter: state.counter + 1,
+            };
+        case "decrement":
+            return {
+                counter: state.counter -1,
+            };
+        default:
+            return state;
+    }
+};
+const App = () =>{
+    const [state, dispatch] = useReducer(reducer, {counter: 0});
+
+    return (
+        <div>
+            <p>{state.counter}</p>
+            <button onClick={() => dispactch({ type: "Increment"})}>Increment</button>
+            <button onClick={() => dispactch({ type: "Decrement"})}>Decrement</button>
+
+        </div>
+    );
+
+};
+
+useContext() -> consegue passar props para toda uma árvore de componetes. Consome contextos de forma mais fácil.
+useMemo() -> Vamos usar quando estivermos tendo problema de performance em alguma função. Basicamente, salva o valor na memória e, caso seja preciso usar a função, a função irá buscar o valor na memória, caso já exista, usa o valor da mmeoria, caso não, executa a função.
+useCallback() -> também usamos para problema de performance. Com essa função nós podemos fazer com que uma função de state so seja renderizada novamente quando for necessário, evitando redenrização. Ou seja, aqui guardamos a função em memória.
+useLayoutEffect() -> Basicamente igual ao useEffect. A maior diferença é que com o useLayoutEffect é executado antes do DOM ser montado pelo react e o useEffect é após.
+
+
+Sobre a estrutura do projeto, antes de rodarmos o projeto com o start é preciso buildar o projeto. 
+A pasta public é responsavel por guardar os assets publicos. É possível colocarmos uma pasta chamada components para deixar os componentes por padrão dentro dessa pasta e deixar mais oganizado.
+A pasta page é repsonsável por deixar o arquivo que será uma página. E a pasta styles é reponsável pelos estilos globais.
+
+Rotas
+Quando temos um arquivo com o nome indice dentro de uma pasta o next tentara executar ele quando charmarmos o caminho dessa pasta no navegador.
+Rotas dinâmica -> Podemos criar rotas dentro de outras pastas e essa rotas dinamicas são rotas que recebam parametro no link, basta colocar o nome ddentro de colchetes, por exemplo um arquivo chamado [id]. Dessa forma, o react entende que ele é dinamico e para usar esse paramentro passado,
+usamos o useRouter. ex:
+import { useRouter } from "next/router"
+
+
+export default function rotas(){
+    const router = useRouter()
+    console.log(router.query)
+    const codigo = router.query.id
+    return (
+        <div>
+            <h1>Rotas / Id/ buscar</h1>
+            <p>{codigo}</p>
+        </div>
+    )
+}
+caso queira que o valor recebido, o parametro, seja inteiro, basta colocar o sinal de positivo em  'const codigo = +router.query.id'.
+Podemos fazer o mesmo em um arquivo, como por exemplo o arquivo '[nome].jsx'. Outra forma de conseguir acessar esses parametros é usando o query, por exemplo:
+'const id = router.query.id', dessa forma, no link que tiver 'id=123' vamos receber esse valor '123' passado para 'id'.
+Com a tag Link do next podemos colocar conexões entre páginas e essa tag não fica visivel para o html, não é uma tag a. Podemos usar essa navegação usando uma função com objetos e utilizando o link.
+
+API 
+Dentro da pasta pages temos a parte da API, sem ter que configurar o CORS, pois a api está junto com o backend. Dentro dessa pasta temos o arquivo heloo.js que retorna um array de json para o navegador.
+Com o js podemos manipular os dados conseguindo receber os tipos de metodos de acesso do navegador.
+export default (req, res) => {
+   if(req.method === "GET"){
+        res.status(200).json({metodo: req.method, nome: "Iago"})
+   }else{
+        res.status(200).json({metodo: req.method, nome: "Patrick"})
+
+   }
+}
+
+Podemos receber o id, da mesma forma que vista antes e podemos manipular uma promessa usando o fetch.
+
+import { useState } from "react"
+
+export default function questao(){
+    const [questao, setQuestao] = useState()
+    
+    fetch('http://localhost:3000/api/questao/123')
+        .then(resp => resp.json())
+        .then(json => console.log(json))
+    return(
+        <div>
+            <h1>Questao</h1>
+        </div>
+    )
+}
+O fecth esta renderizendo varias vezes e, para evitar isso, usamod o useEffect:
+
+import { useEffect, useState } from "react"
+
+export default function questao(){
+    const [questao, setQuestao] = useState(null)
+
+    useEffect(() =>{
+        fetch('http://localhost:3000/api/questao/123')
+            .then(resp => resp.json())
+            .then(setQuestao)
+
+    }, [])
+
+    function renderizarREspostas(){
+        if(questao){
+            return questao.respostas.map((resp, i )=>{
+                return <li key ={i}>{resp}</li>
+            })
+        }
+        return false
+    }
+    return(
+        <div>
+            <h1>Questao</h1>
+            <div>
+                <span> {questao?.id} - {questao?.enunciado}</span>
+                <ul>
+                    {renderizarREspostas()}
+                </ul>
+            </div>
+        </div>
+    )
+}
+
+O backend fica dentro da pasta API
+Para colocar parametros na url da api podemos colocar o nome do arquivo como [...array], dessa forma tudo que vier depois do endereço base entre/ recebe parametros. Para que a url seja aceita sem os parametros é preciso ter [] no nome do arquivo, ou seja, '[[array]].js'.
+Componentes estáticos
+Para defirnir isso é precisamos exportar uma função com o nome 'getStaticProps', então ele vai gerar uma vez esse componente e vai mantelo. Dessa forma, a estrutura dele fica assim, com o retorno de um objeto:
+export function getStaticProps(){
+    return{
+        props:{
+            numero: Math.random()
+        }
+    }
+}
+
+export default function estatico(){
+    return(
+        <div>
+            <span>Aleatorio: {props.numero}</span>
+        </div>
+    )
+}
+Para conseguirmos ver de fato com a api basta buildarmos a aplicação e então rodar o projeto com o comando 'npm start' que a página estática ira se manter apos recarregar a pagina.

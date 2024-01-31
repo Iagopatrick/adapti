@@ -1,4 +1,4 @@
-Rever a explicacao das rotas
+a rota resource contem o create e edit, enquanto a apiResource nao contém esses dois métodos.
 
 nao se esquecer que e preciso ter o accept no header do cliente para identificar que ele consegue tratar o retorno do tipo json
 

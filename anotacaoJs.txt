@@ -26,3 +26,4 @@ Temos os eventos de foco, o focus é ao clicar no elemento e blur quando ele par
 Evento do carregamento da página, útil para nao perder dados ao recarregar a página.
 Debounce -> evento que dispara muitas vezes e o debounce é uma forma de suavizar os eventos
 
+# em classe significa atributo privado
